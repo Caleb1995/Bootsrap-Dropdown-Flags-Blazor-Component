@@ -1,0 +1,56 @@
+<div class="dropdown">
+    <span class="dropdown-toggle countrySelectBtn" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        @if (SelectedValue != "Select a Country")
+        {
+            <img src="https://countryflagsapi.com/png/@SelectedValue" width="35" height="30" >
+        }
+        @SelectedValue
+   </span>
+    <div class="dropdown-menu countrySelect"
+        @foreach (var item in DropdowntList)
+        {
+            <span class="dropdown-item" type="button" @onclick="()=>OnItemSelect(item.Value, item.Key)"><img src="https://countryflagsapi.com/png/@item.Value" width="35" height="30"> @item.Value </span>
+        }
+
+    </div>
+</div>
+
+<style>
+    .countrySelect{
+        height:250px;
+        width:100%;
+        overflow:scroll;
+    }
+    .countrySelectBtn{
+        width:100%;
+        border:solid black 1px;
+        border-radius: 4px; 
+        padding:5px;
+        margin:0 10px 10px 0;
+        cursor:pointer;
+    }
+</style>
+@code {
+    [Parameter]
+    public List<KeyValuePair<int, string>> DropdowntList { get; set; } = new();
+    [Parameter]
+    public EventCallback<int> OnItemSelectCallback { get; set; }
+    [Parameter]
+    public int? Value { get; set; }
+    private string SelectedValue { get; set; } = "Select a Country";
+    private int SelectedKey { get; set; }
+
+ 
+    protected override void OnInitialized()
+    {
+        if (Value != null)
+        {
+            SelectedValue = DropdowntList.Where(x => x.Key == (int)Value).FirstOrDefault(x=>x.Key== Value).Value;
+        }
+    }
+
+    private async Task OnItemSelect(string value, int key){
+        SelectedValue = value;
+        await OnItemSelectCallback.InvokeAsync(key);
+    }
+}
